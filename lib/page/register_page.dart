@@ -41,20 +41,19 @@ class _RegisterPageState extends State<RegisterPage> {
       // show error message
       displayMessageToUser("password dont match", context);
     }
-    //passoord do match
+    //password do match
     else {
       // try register user
       try {
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
-                email: emailController.text.trim(),
-                password: passwordController.text.trim());
+                email: emailController.text, password: passwordController.text);
 
         // create a user document and add to firestore
         createUserDocument(userCredential);
 
         //pop the loading circle
-        Navigator.pop(context);
+        if (context.mounted) Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         //pop context
         Navigator.pop(context);
@@ -68,11 +67,11 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> createUserDocument(UserCredential? userCredential) async {
     if (userCredential != null && userCredential.user != null) {
       await FirebaseFirestore.instance
-          .collection("users")
+          .collection("Users")
           .doc(userCredential.user!.email)
           .set({
         'email': userCredential.user!.email,
-        'username': userNameController.text.trim()
+        'username': userNameController.text
       });
     }
   }
